@@ -1,13 +1,21 @@
 import { useState } from "react";
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Button,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  ScrollView,
+  FlatList,
+} from "react-native";
 
 export default function App() {
   const [textEntered, setTextEntered] = useState("");
   const [goalList, setGoalList] = useState([
-    { id: 1, name: "Less goo" },
-    { id: 2, name: "goo" },
-    { id: 3, name: "More goo" },
-    { id: 4, name: "GO Go" },
+    { id: "1", name: "Less goo" },
+    { id: "2", name: "goo" },
+    { id: "3", name: "More goo" },
+    { id: "4", name: "GO Go" },
   ]);
 
   const goalInputHandler = (entered) => {
@@ -16,7 +24,7 @@ export default function App() {
 
   const addGoalHandler = () => {
     console.log(textEntered);
-    setGoalList((curr) => [...curr, { id: Math.random(), name: textEntered }]);
+    setGoalList((curr) => [...curr, { id: Math.random().toString(), name: textEntered }]);
   };
 
   const deleteGoalHandler = (givenId) => {
@@ -37,18 +45,24 @@ export default function App() {
         <Button title="Add Goalz" onPress={addGoalHandler} />
       </View>
       <View style={styles.goalsContainer}>
-        <Text>List of goals...</Text>
-        {goalList.map((itm) => (
-          <View key={itm.id} style={styles.goalItem}>
-            <Text>{itm.name}</Text>
-            <Button
-              title="Delete"
-              onPress={() => {
-                deleteGoalHandler(itm.id);
-              }}
-            />
-          </View>
-        ))}
+        <FlatList
+          data={goalList}
+          renderItem={(itm) => {
+            return <View style={styles.goalItem}>
+              <Text>{itm.item.name}</Text>
+              <Button
+                title="Delete"
+                onPress={() => {
+                  deleteGoalHandler(itm.item.id);
+                }}
+              />
+            </View>;
+          }}
+          keyExtractor={(item, index) => {
+            return item.id;
+          }}
+          style={styles.goalScroll}
+        />
       </View>
     </View>
   );
@@ -80,7 +94,10 @@ const styles = StyleSheet.create({
   goalsContainer: {
     flex: 5,
     flexDirection: "column",
-    gap: 8,
+  },
+  goalScroll: {
+    flex: 1,
+    flexDirection: "column",
   },
   goalItem: {
     flexDirection: "row",
@@ -90,5 +107,6 @@ const styles = StyleSheet.create({
     borderColor: "#cccccc",
     borderWidth: 2,
     borderRadius: 8,
+    marginBottom: 8,
   },
 });
